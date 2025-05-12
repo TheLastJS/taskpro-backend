@@ -1,7 +1,7 @@
 // import { swaggerDocs } from './middlewares/swaggerDocs.js';
 import express from 'express';
 import { errorHandler } from './middlewares/errorHandler.js';
-// import { notFoundHandler } from './middlewares/notFoundHandler.js';
+import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import cookieParser from 'cookie-parser';
 // import { authRouter } from './routers/auth.js';
 
@@ -12,7 +12,6 @@ export const startServer = () => {
 
   // Middlewares
   app.use(express.json());
-
   app.use(cookieParser());
 
   // Routes
@@ -24,10 +23,10 @@ export const startServer = () => {
   // app.use('/api-docs', swaggerDocs());
 
   // 404 Handler
-  // app.use(notFoundHandler);
+  app.use(notFoundHandler);
 
   // Error Handler
-  // app.use(errorHandler);
+  app.use(errorHandler);
 
   const PORT = process.env.PORT || 3000;
   const server = app.listen(PORT, () => {
