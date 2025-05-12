@@ -9,9 +9,8 @@ export const initMongoDB = async () => {
     const url = process.env.MONGODB_URL;
     const db = process.env.MONGODB_DB;
 
-
     await mongoose.connect(
-      `mongodb+srv://${user}:${pwd}@${url}/${db}?retryWrites=true&w=majority`,
+      `mongodb+srv://${user}:${pwd}@${url}/${db}?retryWrites=true&w=majority&appName=thelastjs`,
     );
     console.log('Mongo connection successfully established!');
   } catch (e) {

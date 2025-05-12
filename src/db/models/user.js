@@ -1,0 +1,34 @@
+import { model, Schema } from 'mongoose';
+
+const usersSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    avatar: {
+      type: Number,
+      default: '',
+    },
+    theme: {
+      type: String,
+      enum: ['light', 'dark', 'violet'],
+      default: 'light',
+    },
+  },
+  {
+    timestamps: true,
+    versionKey: false,
+  },
+);
+
+export const userCollection = model('users', usersSchema);
