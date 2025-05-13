@@ -1,13 +1,31 @@
-const { Router } = require("express");
-const { default: ctrlWrapper } = require("../utils/ctrlWrapper");
-const { googleAuth, googleRedirect } = require("../controller/auth");
+import { Router } from 'express';
+import validateBody from '../middlewares/validateBody.js';
+import { registerUserSchema, loginUserSchema } from '../validators/auth.js';
+import { ctrlWrapper } from '../utils/ctrlWrapper.js';
+import {
+  loginUserController,
+  logoutUserController,
+  registerUserController,
+  refreshUserController,
+} from '../controller/auth.js';
 
+const authRouter = Router();
 
+//  Starts with '/auth' endpoint
 
-const router = Router();
+authRouter.post(
+  '/register',
+  validateBody(registerUserSchema),
+  ctrlWrapper(registerUserController),
+);
 
-router.get("/google", ctrlWrapper(googleAuth));
+authRouter.post(
+  '/login',
+  validateBody(loginUserSchema),
+  ctrlWrapper(loginUserController),
+);
 
-router.get("/google-redirect", ctrlWrapper(googleRedirect));
+authRouter.post('/refresh', ctrlWrapper(refreshUserController));
+authRouter.post('/logout', ctrlWrapper(logoutUserController));
 
-module.exports = router;
+export default authRouter;
