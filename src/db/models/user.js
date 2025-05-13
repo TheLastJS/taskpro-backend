@@ -16,7 +16,7 @@ const usersSchema = new Schema(
       unique: true,
     },
     avatar: {
-      type: Number,
+      type: String,
       default: '',
     },
     theme: {
