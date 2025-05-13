@@ -6,6 +6,7 @@ import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import cookieParser from 'cookie-parser';
 import usersRouter from './routes/user.js';
 import authRouter from './routes/auth.js';
+import { swaggerDocs } from './middlewares/swaggerDocs.js';
 
 export const startServer = () => {
   const app = express();
@@ -21,6 +22,8 @@ export const startServer = () => {
       },
     }),
   );
+  // API Documentation Swagger DOCS
+  app.use('/api-docs', swaggerDocs());
 
   // Routes
   app.use('/users', usersRouter);

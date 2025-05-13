@@ -1,0 +1,81 @@
+tags:
+  - Auth
+summary: User login
+operationId: loginUser
+description: |
+  Authenticates a user with email and password.  
+  On success, sets `refreshToken` and `sessionId` cookies and returns an access token and its expiry.
+security: []
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+          - email
+          - password
+        properties:
+          email:
+            type: string
+            format: email
+            example: john@example.com
+          password:
+            type: string
+            format: password
+            example: password123
+responses:
+  '200':
+    description: User logged in successfully and session created
+    headers:
+      Set-Cookie:
+        description: HTTP-only cookies for refreshToken and sessionId
+        schema:
+          type: string
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              example: User logged in successfully and session created
+            status:
+              type: integer
+              example: 200
+            data:
+              type: object
+              properties:
+                accessToken:
+                  type: string
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                accessTokenValidUntil:
+                  type: string
+                  format: date-time
+                  example: 2024-06-01T12:34:56.000Z
+  '401':
+    description: Invalid credentials
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              example: Invalid password
+            status:
+              type: integer
+              example: 401
+  '404':
+    description: User not found
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              example: User not found
+            status:
+              type: integer
+              example: 404
