@@ -1,0 +1,52 @@
+tags:
+  - Users
+summary: Get user by ID
+operationId: getUserById
+description: Get a user by their unique ID.
+security:
+  - bearerAuth: []
+parameters:
+  - in: path
+    name: userId
+    required: true
+    schema:
+      type: string
+      example: '65ca67e7ae7f10c88b598384'
+responses:
+  '200':
+    description: User fetched successfully
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - message
+            - status
+            - data
+          properties:
+            message:
+              type: string
+              example: User fetched successfully
+            status:
+              type: string
+              example: '200'
+            data:
+              $ref: '../../../components/schemas/user.yaml'
+  '401':
+    $ref: '../../../components/responses/401.yaml'
+  '404':
+    description: User not found
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - message
+            - status
+          properties:
+            message:
+              type: string
+              example: User not found
+            status:
+              type: string
+              example: '404'

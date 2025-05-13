@@ -1,0 +1,50 @@
+tags:
+  - Auth
+summary: Refresh JWT access token
+operationId: refreshUser
+description: |
+  Refreshes the JWT access token using the `refreshToken` and `sessionId` cookies.
+  No Authorization header is required. On success, new access token and expiry are returned.
+security: []
+responses:
+  '200':
+    description: Token refreshed successfully
+    headers:
+      Set-Cookie:
+        description: HTTP-only cookies for new refreshToken and sessionId
+        schema:
+          type: string
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              example: Token refreshed successfully
+            status:
+              type: integer
+              example: 200
+            data:
+              type: object
+              properties:
+                accessToken:
+                  type: string
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                accessTokenValidUntil:
+                  type: string
+                  format: date-time
+                  example: 2024-06-01T12:34:56.000Z
+  '401':
+    description: Invalid or expired refresh token
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              example: Invalid or expired refresh token
+            status:
+              type: integer
+              example: 401

@@ -1,0 +1,73 @@
+tags:
+  - Users
+summary: Create user
+operationId: createUser
+description: Create a new user with name, email, password, optional avatar, and theme.
+security: []
+requestBody:
+  required: true
+  content:
+    multipart/form-data:
+      schema:
+        type: object
+        required:
+          - name
+          - email
+          - password
+        properties:
+          name:
+            description: User's name
+            type: string
+            example: John Doe
+          email:
+            description: User's email
+            type: string
+            format: email
+            example: john@example.com
+          password:
+            description: User's password
+            type: string
+            format: password
+            example: password123
+          avatar:
+            description: User's avatar image
+            type: string
+            format: binary
+          theme:
+            description: User's theme
+            type: string
+            enum: [light, dark, violet]
+            example: light
+responses:
+  '201':
+    description: User created successfully
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            id:
+              type: string
+              example: 60d0fe4f5311236168a109ca
+            name:
+              type: string
+              example: John Doe
+            email:
+              type: string
+              example: john@example.com
+            avatar:
+              type: string
+              example: https://cdn.example.com/avatar.jpg
+            theme:
+              type: string
+              example: light
+  '400':
+    description: Invalid input
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              example: Validation error

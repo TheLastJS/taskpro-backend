@@ -25,6 +25,7 @@ TaskPro is a backend service developed for task and user management. The project
   - [User Management](#user-management)
   - [Session Management](#session-management)
   - [Swagger/OpenAPI Documentation](#swaggeropenapi-documentation)
+  - [API Documentation (Redocly)](#api-documentation-redocly)
   - [Code Quality and Standards](#code-quality-and-standards)
   - [Contributing](#contributing)
   - [License](#license)
@@ -282,6 +283,22 @@ Refresh token and sessionId are sent via cookies.
   npm run build-docs
   ```
 - Then access via `/docs/swagger.json` or the relevant endpoint.
+
+## API Documentation (Redocly)
+
+To generate the OpenAPI documentation (`swagger.json`) using Redocly, run:
+
+```bash
+npm run build-docs
+```
+
+This will bundle your OpenAPI YAML file (`docs/openapi.yaml`) into a JSON file (`docs/swagger.json`).
+
+To preview the documentation locally in your browser, run:
+
+```bash
+npm run preview-docs
+```
 
 ## Code Quality and Standards
 
