@@ -1,16 +1,13 @@
 import { Router } from 'express';
-import validateBody from '../middlewares/validatorBody.js';
-import { createUserSchema, loginUserSchema } from '../validators/user.js';
+import validateBody from '../middlewares/validateBody.js';
+import { registerUserSchema, loginUserSchema } from '../validators/auth.js';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import {
-  getGoogleAuthUrlController,
   loginUserController,
   logoutUserController,
-  refreshUserController,
   registerUserController,
-  requestResetEmailController,
-  resetPasswordController,
-} from '../controllers/auth.js';
+  refreshUserController,
+} from '../controller/auth.js';
 
 const authRouter = Router();
 
@@ -18,7 +15,7 @@ const authRouter = Router();
 
 authRouter.post(
   '/register',
-  validateBody(createUserSchema),
+  validateBody(registerUserSchema),
   ctrlWrapper(registerUserController),
 );
 
@@ -28,17 +25,7 @@ authRouter.post(
   ctrlWrapper(loginUserController),
 );
 
-authRouter.post('/logout', ctrlWrapper(logoutUserController));
-
 authRouter.post('/refresh', ctrlWrapper(refreshUserController));
-
-authRouter.post(
-  '/request-reset-email',
-  ctrlWrapper(requestResetEmailController),
-);
-
-authRouter.post('/reset-password', ctrlWrapper(resetPasswordController));
-
-authRouter.get('/google', ctrlWrapper(getGoogleAuthUrlController));
+authRouter.post('/logout', ctrlWrapper(logoutUserController));
 
 export default authRouter;

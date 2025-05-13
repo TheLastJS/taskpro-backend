@@ -5,6 +5,7 @@ import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import cookieParser from 'cookie-parser';
 import usersRouter from './routes/user.js';
+import authRouter from './routes/auth.js';
 
 export const startServer = () => {
   const app = express();
@@ -23,6 +24,7 @@ export const startServer = () => {
 
   // Routes
   app.use('/users', usersRouter);
+  app.use('/auth', authRouter);
 
   // 404 Handler
   app.use(notFoundHandler);
