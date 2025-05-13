@@ -2,9 +2,10 @@ import { BadRequest } from '../utils/errors.js';
 import mongoose from 'mongoose';
 
 const isValidId = (req, res, next) => {
-  const { contactId } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(contactId)) {
-    next(new BadRequest("Invalid contact id"));
+  const { userId } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    next(new BadRequest('Invalid user id'));
+    return;
   }
   next();
 };
