@@ -21,7 +21,7 @@ export const createUserSchema = Joi.object({
     'string.empty': 'Email is required.',
     'any.required': 'Email is required.',
   }),
-  avatar: Joi.string().uri().optional().messages({
+  avatar: Joi.any().optional().messages({
     'string.uri': 'Avatar must be a valid URL.',
   }),
   theme: Joi.string()

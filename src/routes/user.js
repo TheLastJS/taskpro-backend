@@ -10,6 +10,7 @@ import {
   getUsersController,
   updatePatchUserController,
 } from '../controller/user.js';
+import { upload } from '../middlewares/upload.js';
 
 // Starts with '/users' endpoint
 const usersRouter = Router();
@@ -23,6 +24,7 @@ usersRouter.get('/:userId', isValidId, ctrlWrapper(getUserByIdController));
 //Create User
 usersRouter.post(
   '/',
+  upload.single('avatar'),
   validateBody(createUserSchema),
   ctrlWrapper(createUserController),
 );

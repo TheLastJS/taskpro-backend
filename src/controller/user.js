@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import createHttpError from 'http-errors';
 import {
   getAllUsers,
@@ -7,6 +6,8 @@ import {
   updateUser,
   deleteUser,
 } from '../services/users.js';
+import { saveFileToCloudinary } from '../utils/createFileToCloudinary.js';
+import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
 
 //GET ALL USERS
 export const getUsersController = async (req, res) => {
@@ -39,8 +40,27 @@ export const getUserByIdController = async (req, res) => {
 
 //CREATE USER
 export const createUserController = async (req, res) => {
-  const { name, email, password, avatar, theme } = req.body;
-  const newUser = await createUser({ name, email, password, avatar, theme });
+  console.log('BODY:', req.body);
+  console.log('FILE:', req.file);
+  const { name, email, password, theme } = req.body;
+  const avatarFile = req.file;
+  let avatarUrl = req.body.avatar || null;
+
+  if (avatarFile) {
+    if (process.env.ENABLE_CLOUDINARY === 'true') {
+      avatarUrl = await saveFileToCloudinary(avatarFile);
+    } else {
+      avatarUrl = await saveFileToUploadDir(avatarFile);
+    }
+  }
+
+  const newUser = await createUser({
+    name,
+    email,
+    password,
+    avatar: avatarUrl,
+    theme,
+  });
 
   if (!newUser) {
     throw createHttpError(400, 'User creation failed');
