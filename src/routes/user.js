@@ -11,9 +11,12 @@ import {
   updatePatchUserController,
 } from '../controller/user.js';
 import { upload } from '../middlewares/upload.js';
+import { authorize } from '../middlewares/authorize.js';
 
 // Starts with '/users' endpoint
 const usersRouter = Router();
+// Middleware to check if the user is authorized
+usersRouter.use(authorize);
 
 //Get Users
 usersRouter.get('/', ctrlWrapper(getUsersController));
