@@ -35,8 +35,7 @@ export const authorize = async (req, res, next) => {
     next(createHttpError(401, 'User not found'));
     return;
   }
-
   req.user = user;
-
+  console.log('authorize sonrası req.user:', req.user);
   next();
 };

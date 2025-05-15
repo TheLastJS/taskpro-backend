@@ -35,3 +35,10 @@ export const deleteUser = async (userId) => {
   const deletedUser = await userCollection.findByIdAndDelete(userId);
   return deletedUser;
 };
+
+// GET CURRENT USER
+export const getCurrentUser = async (userId) => {
+  console.log('getCurrentUser fonksiyonu çağrıldı, userId:', userId);
+  const currentUser = await userCollection.findById(userId);
+  return currentUser;
+};

@@ -5,6 +5,7 @@ import {
   createUser,
   updateUser,
   deleteUser,
+  getCurrentUser,
 } from '../services/users.js';
 import { saveFileToCloudinary } from '../utils/createFileToCloudinary.js';
 import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
@@ -98,5 +99,28 @@ export const deleteUserController = async (req, res) => {
     message: 'User deleted successfully',
     status: '200',
     data: deletedUser,
+  });
+};
+// GET CURRENT USER
+export const getCurrentUserController = async (req, res) => {
+  console.log('getCurrentUserController çalıştı');
+  console.log('req.user:', req.user);
+  if (!req.user) {
+    throw createHttpError(400, 'req.user yok');
+  }
+  const userId = req.user._id?.toString();
+  if (!userId) {
+    throw createHttpError(400, 'userId yok');
+  }
+  const user = await getCurrentUser(userId);
+
+  if (!user) {
+    throw createHttpError(404, 'User not found');
+  }
+
+  res.status(200).send({
+    message: 'Current user fetched successfully',
+    status: '200',
+    data: user,
   });
 };
