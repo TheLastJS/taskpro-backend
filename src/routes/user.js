@@ -6,6 +6,7 @@ import validateBody from '../middlewares/validateBody.js';
 import {
   createUserController,
   deleteUserController,
+  getCurrentUserController,
   getUserByIdController,
   getUsersController,
   updatePatchUserController,
@@ -20,6 +21,9 @@ usersRouter.use(authorize);
 
 //Get Users
 usersRouter.get('/', ctrlWrapper(getUsersController));
+
+// Get Current User
+usersRouter.get('/current', ctrlWrapper(getCurrentUserController));
 
 //Get User by ID
 usersRouter.get('/:userId', isValidId, ctrlWrapper(getUserByIdController));
