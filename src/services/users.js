@@ -39,6 +39,6 @@ export const deleteUser = async (userId) => {
 // GET CURRENT USER
 export const getCurrentUser = async (userId) => {
   console.log('getCurrentUser fonksiyonu çağrıldı, userId:', userId);
-  const currentUser = await userCollection.findById(userId);
+  const currentUser = await userCollection.findById(userId).select('-password');
   return currentUser;
 };
