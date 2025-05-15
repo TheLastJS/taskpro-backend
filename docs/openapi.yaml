@@ -21,6 +21,9 @@ paths:
       $ref: ../swagger/paths/users/get.yaml
     post:
       $ref: ../swagger/paths/users/post.yaml
+  /users/current:
+    get:
+      $ref: ../swagger/paths/users/getCurrentUser.yaml
   /users/{userId}:
     get:
       $ref: ../swagger/paths/users/{id}/get.yaml
