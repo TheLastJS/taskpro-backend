@@ -20,6 +20,7 @@ export const authorize = async (req, res, next) => {
   const session = await SessionsCollection.findOne({
     accessToken: token,
   });
+
   if (!session) {
     next(createHttpError(401, 'Invalid token'));
     return;
@@ -29,6 +30,7 @@ export const authorize = async (req, res, next) => {
     next(createHttpError(401, 'Token expired'));
     return;
   }
+
   const user = await userCollection.findById(session.userId);
 
   if (!user) {
@@ -36,6 +38,5 @@ export const authorize = async (req, res, next) => {
     return;
   }
   req.user = user;
-  console.log('authorize sonrası req.user:', req.user);
   next();
 };

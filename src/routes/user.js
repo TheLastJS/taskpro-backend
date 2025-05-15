@@ -22,6 +22,9 @@ usersRouter.use(authorize);
 //Get Users
 usersRouter.get('/', ctrlWrapper(getUsersController));
 
+// Get Current User
+usersRouter.get('/current', ctrlWrapper(getCurrentUserController));
+
 //Get User by ID
 usersRouter.get('/:userId', isValidId, ctrlWrapper(getUserByIdController));
 
@@ -41,8 +44,5 @@ usersRouter.patch(
 );
 //Delete User
 usersRouter.delete('/:userId', isValidId, ctrlWrapper(deleteUserController));
-
-// Get Current User
-usersRouter.get('/current', ctrlWrapper(getCurrentUserController));
 
 export default usersRouter;
