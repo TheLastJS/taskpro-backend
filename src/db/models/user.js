@@ -24,6 +24,12 @@ const usersSchema = new Schema(
       enum: ['light', 'dark', 'violet'],
       default: 'light',
     },
+    boards: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'boards',
+      },
+    ],
   },
   {
     timestamps: true,

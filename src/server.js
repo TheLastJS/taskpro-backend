@@ -6,6 +6,7 @@ import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import cookieParser from 'cookie-parser';
 import usersRouter from './routes/user.js';
 import authRouter from './routes/auth.js';
+import boardsRouter from './routes/board.js';
 import { swaggerDocs } from './middlewares/swaggerDocs.js';
 
 export const startServer = () => {
@@ -28,6 +29,7 @@ export const startServer = () => {
   // Routes
   app.use('/users', usersRouter);
   app.use('/auth', authRouter);
+  app.use('/boards', boardsRouter);
 
   // 404 Handler
   app.use(notFoundHandler);
