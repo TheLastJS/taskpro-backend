@@ -9,6 +9,7 @@ import {
   createBoardController,
   updateBoardController,
   deleteBoardController,
+  updateBoardBackground,
 } from '../controller/board.js';
 
 // Starts with '/boards' endpoint
@@ -33,6 +34,13 @@ boardsRouter.patch(
   isValidId,
   validateBody(updateBoardSchema),
   ctrlWrapper(updateBoardController),
+);
+
+// Update Board Background
+boardsRouter.patch(
+  '/:boardId/background',
+  isValidId,
+  ctrlWrapper(updateBoardBackground),
 );
 
 // Delete Board

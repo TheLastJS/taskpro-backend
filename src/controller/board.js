@@ -170,3 +170,38 @@ export const deleteBoardController = async (req, res) => {
     },
   });
 };
+
+export const updateBoardBackground = async (req, res) => {
+  const { boardId } = req.params;
+  const { _id: userId } = req.user;
+  const { background } = req.body;
+
+  if (!background || typeof background !== 'string') {
+    throw createHttpError(400, 'Background must be a string');
+  }
+
+  const board = await boardCollection.findById(boardId);
+
+  if (!board) {
+    throw createHttpError(404, 'Board not found');
+  }
+
+  if (board.user.toString() !== userId.toString()) {
+    throw createHttpError(403, 'User not authorized to update this board');
+  }
+
+  board.background = background;
+  const updatedBoard = await board.save();
+
+  res.status(200).send({
+    message: 'Board background updated successfully',
+    status: '200',
+    data: {
+      _id: updatedBoard._id,
+      title: updatedBoard.title,
+      icon: updatedBoard.icon,
+      background: updatedBoard.background,
+      updatedAt: updatedBoard.updatedAt,
+    },
+  });
+};
