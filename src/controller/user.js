@@ -75,8 +75,20 @@ export const createUserController = async (req, res) => {
 //UPDATE USER
 export const updatePatchUserController = async (req, res) => {
   const { userId } = req.params;
-  const { name, avatar, theme } = req.body;
-  const updatedUser = await updateUser(userId, { name, avatar, theme });
+  let { name, avatar, theme, password } = req.body;
+  let avatarUrl = avatar;
+  if (avatarUrl === '') avatarUrl = null;
+
+  // Eğer dosya geldiyse kaydet
+  if (req.file) {
+    if (process.env.ENABLE_CLOUDINARY === 'true') {
+      avatarUrl = await saveFileToCloudinary(req.file);
+    } else {
+      avatarUrl = await saveFileToUploadDir(req.file);
+    }
+  }
+
+  const updatedUser = await updateUser(userId, { name, avatar: avatarUrl, theme, password });
 
   if (!updatedUser) {
     throw createHttpError(404, 'User not found');

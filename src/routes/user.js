@@ -39,6 +39,7 @@ usersRouter.post(
 usersRouter.patch(
   '/:userId',
   isValidId,
+  upload.single('avatar'),
   validateBody(updateUserSchema),
   ctrlWrapper(updatePatchUserController),
 );

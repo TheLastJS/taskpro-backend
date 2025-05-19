@@ -39,10 +39,15 @@ export const updateUserSchema = Joi.object({
     'string.min': 'Name must be at least 3 characters.',
     'string.max': 'Name must be at most 30 characters.',
   }),
-  avatar: Joi.string().uri().messages({
+  avatar: Joi.string().allow('').uri().messages({
     'string.uri': 'Avatar must be a valid URL.',
   }),
   theme: Joi.string().valid('light', 'dark', 'violet').messages({
     'any.only': 'Theme must be one of light, dark, or violet.',
+  }),
+  password: Joi.string().min(6).max(100).messages({
+    'string.base': 'Password must be a string.',
+    'string.min': 'Password must be at least 6 characters.',
+    'string.max': 'Password must be at most 100 characters.',
   }),
 });

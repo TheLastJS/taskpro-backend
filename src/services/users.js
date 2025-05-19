@@ -1,4 +1,5 @@
 import { userCollection } from '../db/models/user.js';
+import bcrypt from 'bcrypt';
 
 //GET ALL USERS
 export const getAllUsers = async () => {
@@ -22,10 +23,15 @@ export const createUser = async ({ name, email, password, avatar, theme }) => {
   return newUser;
 };
 //UPDATE USER
-export const updateUser = async (userId, { name, avatar, theme }) => {
+export const updateUser = async (userId, { name, avatar, theme, password }) => {
+  const updateFields = { name, avatar, theme };
+  if (password) {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    updateFields.password = hashedPassword;
+  }
   const updatedUser = await userCollection.findByIdAndUpdate(
     userId,
-    { name, avatar, theme },
+    updateFields,
     { new: true },
   );
   return updatedUser;
