@@ -35,6 +35,7 @@ export const loginUserController = async (req, res) => {
     data: {
       accessToken: session.accessToken,
       accessTokenValidUntil: session.accessTokenValidUntil,
+      user: session.user
     },
   });
 };
