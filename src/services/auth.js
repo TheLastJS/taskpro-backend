@@ -70,6 +70,13 @@ export const loginUser = async ({ email, password }) => {
     accessTokenValidUntil: tokens.accessTokenValidUntil,
     refreshTokenValidUntil: tokens.refreshTokenValidUntil,
     sessionId: session._id,
+    user: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      avatar: user.avatar,
+      theme: user.theme
+    }
   };
 };
 
