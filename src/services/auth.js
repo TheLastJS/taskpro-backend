@@ -8,19 +8,24 @@ import {
   REFRESH_TOKEN_EXPIRES_IN,
 } from '../constants/index.js';
 import { SessionsCollection } from '../db/models/sessions.js';
+import { randomBytes } from 'node:crypto';
+import { validateCode } from '../utils/googleOAuth.js';
 
 // Generate JWT tokens
 const generateTokens = (user) => {
   const payload = { id: user._id, email: user.email };
   const accessToken = jwt.sign(payload, env('JWT_SECRET'), {
-    expiresIn: ACCESS_TOKEN_EXPIRES_IN,
+    expiresIn: Math.floor(ACCESS_TOKEN_EXPIRES_IN / 1000), // saniye cinsinden
   });
   const refreshToken = jwt.sign(payload, env('JWT_SECRET'), {
-    expiresIn: REFRESH_TOKEN_EXPIRES_IN,
+    expiresIn: Math.floor(REFRESH_TOKEN_EXPIRES_IN / 1000), // saniye cinsinden
   });
 
-  const accessTokenValidUntil = new Date(Date.now() + 15 * 60 * 1000); // 15 dakika
-  const refreshTokenValidUntil = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 gün
+  const accessTokenValidUntil = new Date(Date.now() + ACCESS_TOKEN_EXPIRES_IN); // 59 dakika
+  const refreshTokenValidUntil = new Date(
+    Date.now() + REFRESH_TOKEN_EXPIRES_IN,
+  ); // 1 gün
+
   return {
     accessToken,
     refreshToken,
@@ -102,6 +107,7 @@ export const refreshUser = async (refreshToken) => {
       sessionId: session._id,
     };
   } catch (err) {
+    console.log(err);
     throw createHttpError(401, 'Invalid or expired refresh token');
   }
 };
@@ -110,4 +116,39 @@ export const refreshUser = async (refreshToken) => {
 export const logoutUser = async (sessionId) => {
   await SessionsCollection.findByIdAndDelete(sessionId);
   return { message: 'User logged out successfully' };
+};
+// Google OAuth
+export const loginOrRegisterWithGoogle = async (code) => {
+  const userFromGoogle = await validateCode(code);
+
+  let user = await userCollection.findOne({
+    email: userFromGoogle.email,
+  });
+
+  if (!user) {
+    user = await userCollection.create({
+      name: userFromGoogle.name,
+      email: userFromGoogle.email,
+      password: randomBytes(30).toString('base64'),
+    });
+  }
+
+  await SessionsCollection.deleteMany({ userId: user._id });
+
+  const accessToken = randomBytes(30).toString('base64');
+  const refreshToken = randomBytes(30).toString('base64');
+  const accessTokenValidUntil = new Date(Date.now() + ACCESS_TOKEN_EXPIRES_IN); // 15 minutes
+  const refreshTokenValidUntil = new Date(
+    Date.now() + REFRESH_TOKEN_EXPIRES_IN,
+  ); // 7 days
+
+  const session = await SessionsCollection.create({
+    userId: user._id,
+    accessToken,
+    refreshToken,
+    accessTokenValidUntil,
+    refreshTokenValidUntil,
+  });
+
+  return session;
 };

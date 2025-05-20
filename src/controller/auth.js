@@ -4,6 +4,7 @@ import {
   registerUser,
   refreshUser,
 } from '../services/auth.js';
+import { generateGoogleAuthUrl } from '../utils/googleOAuth.js';
 
 export const registerUserController = async (req, res) => {
   const userData = req.body;
@@ -39,7 +40,7 @@ export const loginUserController = async (req, res) => {
 };
 
 export const refreshUserController = async (req, res) => {
-  const { refreshToken, sessionId } = req.cookies;
+  const { refreshToken } = req.cookies;
   const session = await refreshUser(refreshToken);
 
   res.cookie('refreshToken', session.refreshToken, {
@@ -72,5 +73,17 @@ export const logoutUserController = async (req, res) => {
   res.status(200).send({
     message: 'User logged out successfully',
     status: 200,
+  });
+};
+
+export const getGoogleAuthUrlController = async (req, res) => {
+  const url = await generateGoogleAuthUrl();
+
+  return res.status(200).send({
+    message: 'Google auth url generated successfully',
+    status: 200,
+    data: {
+      url,
+    },
   });
 };
