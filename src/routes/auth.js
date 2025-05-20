@@ -7,6 +7,7 @@ import {
   logoutUserController,
   registerUserController,
   refreshUserController,
+  getGoogleAuthUrlController,
 } from '../controller/auth.js';
 
 const authRouter = Router();
@@ -28,4 +29,5 @@ authRouter.post(
 authRouter.post('/refresh', ctrlWrapper(refreshUserController));
 authRouter.post('/logout', ctrlWrapper(logoutUserController));
 
+authRouter.get('/google', ctrlWrapper(getGoogleAuthUrlController));
 export default authRouter;
