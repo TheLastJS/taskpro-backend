@@ -10,6 +10,7 @@ import {
   updateBoardController,
   deleteBoardController,
   updateBoardBackground,
+  getBoardsController,
 } from '../controller/board.js';
 
 // Starts with '/boards' endpoint
@@ -45,5 +46,8 @@ boardsRouter.patch(
 
 // Delete Board
 boardsRouter.delete('/:boardId', isValidId, ctrlWrapper(deleteBoardController));
+
+// Get all boards for the user
+boardsRouter.get('/', ctrlWrapper(getBoardsController));
 
 export default boardsRouter;

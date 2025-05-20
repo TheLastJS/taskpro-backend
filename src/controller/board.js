@@ -205,3 +205,13 @@ export const updateBoardBackground = async (req, res) => {
     },
   });
 };
+
+export const getBoardsController = async (req, res) => {
+  const { _id: userId } = req.user;
+  const boards = await boardCollection.find({ user: userId }).select('_id title icon background updatedAt');
+  res.status(200).send({
+    message: 'Boards fetched successfully',
+    status: '200',
+    data: boards,
+  });
+};
