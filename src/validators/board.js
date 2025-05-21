@@ -6,7 +6,7 @@ export const addBoardSchema = Joi.object({
     'any.required': 'missing required title field',
   }),
   icon: Joi.string().valid(...iconTypes),
-  background: Joi.string().valid(...backgroundTypes),
+  background: Joi.string().valid('', ...backgroundTypes),
 });
 
 export const updateBoardSchema = Joi.object({
@@ -20,8 +20,7 @@ export const updateBoardSchema = Joi.object({
       'any.required': 'missing required icon field',
     }),
   background: Joi.string()
-    .required()
-    .valid(...backgroundTypes)
+    .valid('', ...backgroundTypes)
     .messages({
       'any.required': 'missing required background field',
     }),
