@@ -11,7 +11,12 @@ import {
   deleteBoardController,
   updateBoardBackground,
   getBoardsController,
+  addColumnToBoardController,
+  getColumnsController,
+  deleteColumnController,
+  updateColumnController,
 } from '../controller/board.js';
+import { addColumnSchema } from '../validators/column.js';
 
 // Starts with '/boards' endpoint
 const boardsRouter = Router();
@@ -49,5 +54,34 @@ boardsRouter.delete('/:boardId', isValidId, ctrlWrapper(deleteBoardController));
 
 // Get all boards for the user
 boardsRouter.get('/', ctrlWrapper(getBoardsController));
+
+// Get Columns of a Board
+boardsRouter.get(
+  '/:boardId/columns',
+  isValidId,
+  ctrlWrapper(getColumnsController),
+);
+// Add Column to Board
+boardsRouter.post(
+  '/:boardId/columns',
+  isValidId,
+  validateBody(addColumnSchema), // bunu birazdan oluşturacağız
+  ctrlWrapper(addColumnToBoardController),
+);
+
+// Update Column
+boardsRouter.patch(
+  '/:boardId/columns/:columnId',
+  isValidId,
+  validateBody(addColumnSchema),
+  ctrlWrapper(updateColumnController),
+);
+
+// Delete Column from Board
+boardsRouter.delete(
+  '/:boardId/columns/:columnId',
+  isValidId,
+  ctrlWrapper(deleteColumnController),
+);
 
 export default boardsRouter;

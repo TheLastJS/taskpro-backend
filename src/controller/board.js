@@ -1,6 +1,7 @@
 import createHttpError from 'http-errors';
 import { boardCollection } from '../db/models/board.js';
 import { userCollection } from '../db/models/user.js';
+import { columnCollection } from '../db/models/column.js';
 
 export const getBoardController = async (req, res) => {
   const { boardId } = req.params;
@@ -208,10 +209,141 @@ export const updateBoardBackground = async (req, res) => {
 
 export const getBoardsController = async (req, res) => {
   const { _id: userId } = req.user;
-  const boards = await boardCollection.find({ user: userId }).select('_id title icon background updatedAt');
+  const boards = await boardCollection
+    .find({ user: userId })
+    .select('_id title icon background updatedAt');
   res.status(200).send({
     message: 'Boards fetched successfully',
     status: '200',
     data: boards,
+  });
+};
+
+// add column to board
+
+export const addColumnToBoardController = async (req, res) => {
+  const { boardId } = req.params;
+  const { title } = req.body;
+  const { _id: userId } = req.user;
+
+  if (!title || typeof title !== 'string') {
+    throw createHttpError(400, 'Column title is required');
+  }
+
+  const board = await boardCollection.findById(boardId);
+
+  if (!board) {
+    throw createHttpError(404, 'Board not found');
+  }
+
+  if (board.user.toString() !== userId.toString()) {
+    throw createHttpError(403, 'Not authorized to modify this board');
+  }
+
+  const newColumn = await columnCollection.create({
+    title,
+    board: boardId,
+    tasks: [],
+  });
+
+  board.columns.push(newColumn._id);
+  await board.save();
+
+  res.status(201).send({
+    message: 'Column added successfully',
+    status: '201',
+    data: {
+      column: newColumn,
+    },
+  });
+};
+
+export const getColumnsController = async (req, res) => {
+  const { boardId } = req.params;
+  const { _id: userId } = req.user;
+
+  const board = await boardCollection.findById(boardId);
+  if (!board) {
+    throw createHttpError(404, 'Board not found');
+  }
+  if (board.user.toString() !== userId.toString()) {
+    throw createHttpError(403, 'Not authorized to view this board');
+  }
+  const columns = await columnCollection.find({ board: boardId });
+  if (!columns) {
+    throw createHttpError(404, 'Columns not found');
+  }
+  res.status(200).send({
+    message: 'Columns fetched successfully',
+    status: '200',
+    data: {
+      columns,
+    },
+  });
+};
+
+export const deleteColumnController = async (req, res) => {
+  const { boardId, columnId } = req.params;
+  const { _id: userId } = req.user;
+
+  const board = await boardCollection.findById(boardId);
+  if (!board) {
+    throw createHttpError(404, 'Board not found');
+  }
+  if (board.user.toString() !== userId.toString()) {
+    throw createHttpError(403, 'Not authorized to delete this column');
+  }
+
+  const column = await columnCollection.findById(columnId);
+  if (!column) {
+    throw createHttpError(404, 'Column not found');
+  }
+  if (column.board.toString() !== boardId) {
+    throw createHttpError(403, 'Not authorized to delete this column');
+  }
+  await columnCollection.findByIdAndDelete(columnId);
+  board.columns = board.columns.filter((col) => col.toString() !== columnId);
+  await board.save();
+  res.status(200).send({
+    message: 'Column deleted successfully',
+    status: '200',
+    data: {
+      columnId,
+    },
+  });
+};
+
+export const updateColumnController = async (req, res) => {
+  const { boardId, columnId } = req.params;
+  const { _id: userId } = req.user;
+  const { title } = req.body;
+
+  if (!title || typeof title !== 'string') {
+    throw createHttpError(400, 'Column title is required');
+  }
+
+  const board = await boardCollection.findById(boardId);
+  if (!board) {
+    throw createHttpError(404, 'Board not found');
+  }
+  if (board.user.toString() !== userId.toString()) {
+    throw createHttpError(403, 'Not authorized to update this column');
+  }
+
+  const column = await columnCollection.findById(columnId);
+  if (!column) {
+    throw createHttpError(404, 'Column not found');
+  }
+  if (column.board.toString() !== boardId) {
+    throw createHttpError(403, 'Not authorized to update this column');
+  }
+  column.title = title;
+  await column.save();
+  res.status(200).send({
+    message: 'Column updated successfully',
+    status: '200',
+    data: {
+      column,
+    },
   });
 };
