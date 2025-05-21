@@ -15,7 +15,6 @@ const boardSchema = new Schema(
     background: {
       type: String,
       enum: backgroundTypes,
-      default: '00',
     },
     user: {
       type: Schema.Types.ObjectId,

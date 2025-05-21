@@ -146,7 +146,10 @@ export const deleteBoardController = async (req, res) => {
     throw createHttpError(404, 'Board not found');
   }
 
-  // Delete the board
+  // Önce board'a bağlı tüm column'ları sil
+  await columnCollection.deleteMany({ board: boardId });
+
+  // Board'u sil
   const result = await boardCollection.findByIdAndDelete(boardId);
 
   if (!result) {
