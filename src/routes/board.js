@@ -15,8 +15,13 @@ import {
   getColumnsController,
   deleteColumnController,
   updateColumnController,
+  getTasksController,
+  addTaskToColumnController,
+  updateTaskController,
+  deleteTaskController,
 } from '../controller/board.js';
 import { addColumnSchema } from '../validators/column.js';
+import { addTaskSchema, updateTaskSchema } from '../validators/task.js';
 
 // Starts with '/boards' endpoint
 const boardsRouter = Router();
@@ -82,6 +87,36 @@ boardsRouter.delete(
   '/:boardId/columns/:columnId',
   isValidId,
   ctrlWrapper(deleteColumnController),
+);
+
+//post task to column
+boardsRouter.post(
+  '/:boardId/columns/:columnId/task',
+  isValidId,
+  validateBody(addTaskSchema),
+  ctrlWrapper(addTaskToColumnController),
+);
+
+//get task from column
+boardsRouter.get(
+  '/:boardId/columns/:columnId/task',
+  isValidId,
+  ctrlWrapper(getTasksController),
+);
+
+//update task from column
+boardsRouter.patch(
+  '/:boardId/columns/:columnId/task/:taskId',
+  isValidId,
+  validateBody(updateTaskSchema),
+  ctrlWrapper(updateTaskController),
+);
+
+//delete task from column
+boardsRouter.delete(
+  '/:boardId/columns/:columnId/task/task:id',
+  isValidId,
+  ctrlWrapper(deleteTaskController),
 );
 
 export default boardsRouter;

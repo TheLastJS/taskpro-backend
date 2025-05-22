@@ -11,7 +11,7 @@ const columnSchema = new Schema(
     tasks: [
       {
         type: Schema.Types.ObjectId,
-        ref: 'tasks', // task modeli varsa, yoksa şimdilik boş geçilebilir
+        ref: 'tasks',
       },
     ],
     board: {
