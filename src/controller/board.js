@@ -2,6 +2,8 @@ import createHttpError from 'http-errors';
 import { boardCollection } from '../db/models/board.js';
 import { userCollection } from '../db/models/user.js';
 import { columnCollection } from '../db/models/column.js';
+import { taskCollection } from '../db/models/task.js';
+import mongoose from 'mongoose';
 
 export const getBoardController = async (req, res) => {
   const { boardId } = req.params;
@@ -347,6 +349,207 @@ export const updateColumnController = async (req, res) => {
     status: '200',
     data: {
       column,
+    },
+  });
+};
+
+export const getTasksController = async (req, res) => {
+  const { boardId, columnId } = req.params;
+  const { _id: userId } = req.user;
+
+  const board = await boardCollection.findById(boardId);
+  if (!board) {
+    throw createHttpError(404, 'Board not found');
+  }
+  if (board.user.toString() !== userId.toString()) {
+    throw createHttpError(403, 'Not authorized to view this board');
+  }
+
+  const column = await columnCollection.findById(columnId);
+  if (!column) {
+    throw createHttpError(404, 'Column not found');
+  }
+  if (column.board.toString() !== boardId) {
+    throw createHttpError(403, 'Not authorized to view this column');
+  }
+  const tasks = await columnCollection
+    .findById(columnId)
+    .populate('tasks')
+    .select('tasks');
+  if (!tasks) {
+    throw createHttpError(404, 'Tasks not found');
+  }
+  res.status(200).send({
+    message: 'Tasks fetched successfully',
+    status: '200',
+    data: {
+      tasks: tasks.tasks,
+    },
+  });
+};
+
+export const addTaskToColumnController = async (req, res) => {
+  const { boardId, columnId } = req.params;
+  const { _id: userId } = req.user;
+  const { title, description, priority, deadline } = req.body;
+
+  if (!title || typeof title !== 'string') {
+    throw createHttpError(400, 'Task title is required');
+  }
+
+  const board = await boardCollection.findById(boardId);
+  if (!board) {
+    throw createHttpError(404, 'Board not found');
+  }
+  if (board.user.toString() !== userId.toString()) {
+    throw createHttpError(403, 'Not authorized to add task to this board');
+  }
+
+  const column = await columnCollection.findById(columnId);
+  if (!column) {
+    throw createHttpError(404, 'Column not found');
+  }
+  if (column.board.toString() !== boardId) {
+    throw createHttpError(403, 'Not authorized to add task to this column');
+  }
+
+  const newTask = await taskCollection.create({
+    title,
+    description,
+    priority,
+    deadline,
+    column: columnId,
+    board: boardId, // board alanı da zorunluysa ekleyin
+    user: userId, // user alanını ekleyin
+  });
+
+  column.tasks.push(newTask._id);
+  await column.save();
+
+  res.status(201).send({
+    message: 'Task added successfully',
+    status: '201',
+    data: {
+      task: newTask,
+    },
+  });
+};
+
+export const updateTaskController = async (req, res) => {
+  const { boardId, columnId, taskId } = req.params;
+  const { _id: userId } = req.user;
+  const {
+    title,
+    description,
+    priority,
+    deadline,
+    column: newColumnId,
+  } = req.body;
+
+  const board = await boardCollection.findById(boardId);
+  if (!board) {
+    throw createHttpError(404, 'Board not found');
+  }
+  if (board.user.toString() !== userId.toString()) {
+    throw createHttpError(403, 'Not authorized to update this task');
+  }
+
+  const column = await columnCollection.findById(columnId);
+  if (!column) {
+    throw createHttpError(404, 'Column not found');
+  }
+  if (column.board.toString() !== boardId) {
+    throw createHttpError(403, 'Not authorized to update this task');
+  }
+  const task = await taskCollection.findById(taskId);
+  if (!task) {
+    throw createHttpError(404, 'Task not found');
+  }
+  if (task.user.toString() !== userId.toString()) {
+    throw createHttpError(403, 'Not authorized to update this task');
+  }
+
+  if (newColumnId && newColumnId !== columnId) {
+    if (!mongoose.Types.ObjectId.isValid(newColumnId)) {
+      throw createHttpError(400, 'Invalid column id');
+    }
+    const targetColumn = await columnCollection.findById(newColumnId);
+    if (!targetColumn) {
+      throw createHttpError(404, 'Target column not found');
+    }
+    // Yetki kontrolü eklemeyi unutmayın!
+    if (
+      targetColumn.board.toString() !== boardId ||
+      board.user.toString() !== userId.toString()
+    ) {
+      throw createHttpError(403, 'Not authorized to move task to this column');
+    }
+    // Eski column'dan task'ı çıkar (daha güvenli yöntem)
+    await columnCollection.findByIdAndUpdate(columnId, {
+      $pull: { tasks: taskId },
+    });
+    // Yeni column'a task'ı ekle
+    targetColumn.tasks.push(task._id);
+    await targetColumn.save();
+    // Task'ın column bilgisini güncelle
+    task.column = newColumnId;
+  }
+  if (title !== undefined) {
+    task.title = title;
+  }
+  if (description !== undefined) {
+    task.description = description;
+  }
+  if (priority !== undefined) {
+    task.priority = priority;
+  }
+  if (deadline !== undefined) {
+    task.deadline = deadline;
+  }
+  await task.save();
+  res.status(200).send({
+    message: 'Task updated successfully',
+    status: '200',
+    data: {
+      task,
+    },
+  });
+};
+
+export const deleteTaskController = async (req, res) => {
+  const { boardId, columnId, taskId } = req.params;
+  const { _id: userId } = req.user;
+
+  const board = await boardCollection.findById(boardId);
+  if (!board) {
+    throw createHttpError(404, 'Board not found');
+  }
+  if (board.user.toString() !== userId.toString()) {
+    throw createHttpError(403, 'Not authorized to delete this task');
+  }
+
+  const column = await columnCollection.findById(columnId);
+  if (!column) {
+    throw createHttpError(404, 'Column not found');
+  }
+  if (column.board.toString() !== boardId) {
+    throw createHttpError(403, 'Not authorized to delete this task');
+  }
+  const task = await columnCollection.findById(taskId);
+  if (!task) {
+    throw createHttpError(404, 'Task not found');
+  }
+  if (task.column.toString() !== columnId) {
+    throw createHttpError(403, 'Not authorized to delete this task');
+  }
+  await columnCollection.findByIdAndDelete(taskId);
+  column.tasks = column.tasks.filter((task) => task.toString() !== taskId);
+  await column.save();
+  res.status(200).send({
+    message: 'Task deleted successfully',
+    status: '200',
+    data: {
+      taskId,
     },
   });
 };
