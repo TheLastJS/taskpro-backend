@@ -535,21 +535,31 @@ export const deleteTaskController = async (req, res) => {
   if (column.board.toString() !== boardId) {
     throw createHttpError(403, 'Not authorized to delete this task');
   }
-  const task = await columnCollection.findById(taskId);
+  const task = await taskCollection.findById(taskId);
+
+  console.log(
+    'task.column:',
+    task?.column?.toString(),
+    'columnId:',
+    columnId.toString(),
+  );
   if (!task) {
     throw createHttpError(404, 'Task not found');
   }
-  if (task.column.toString() !== columnId) {
+  if (task.column.toString() !== columnId.toString()) {
     throw createHttpError(403, 'Not authorized to delete this task');
   }
-  await columnCollection.findByIdAndDelete(taskId);
-  column.tasks = column.tasks.filter((task) => task.toString() !== taskId);
-  await column.save();
+  // Doğru koleksiyondan silme işlemi
+  await taskCollection.findByIdAndDelete(taskId);
+  // Column'dan task referansını $pull ile çıkar (daha güvenli)
+  await columnCollection.findByIdAndUpdate(columnId, {
+    $pull: { tasks: taskId },
+  });
   res.status(200).send({
     message: 'Task deleted successfully',
     status: '200',
     data: {
       taskId,
-    },
-  });
+    },
+  });
 };

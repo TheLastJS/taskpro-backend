@@ -114,7 +114,7 @@ boardsRouter.patch(
 
 //delete task from column
 boardsRouter.delete(
-  '/:boardId/columns/:columnId/task/task:id',
+  '/:boardId/columns/:columnId/task/:taskId',
   isValidId,
   ctrlWrapper(deleteTaskController),
 );
