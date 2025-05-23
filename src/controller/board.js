@@ -565,3 +565,51 @@ export const deleteTaskController = async (req, res) => {
     },
   });
 };
+
+export const reorderTasksController = async (req, res) => {
+  const { boardId, columnId } = req.params;
+  const { _id: userId } = req.user;
+  const { taskOrder } = req.body;
+
+  if (!Array.isArray(taskOrder)) {
+    throw createHttpError(400, 'taskOrder must be an array');
+  }
+
+  const board = await boardCollection.findById(boardId);
+  if (!board) {
+    throw createHttpError(404, 'Board not found');
+  }
+  if (board.user.toString() !== userId.toString()) {
+    throw createHttpError(403, 'Not authorized to reorder tasks in this board');
+  }
+
+  const column = await columnCollection.findById(columnId);
+  if (!column) {
+    throw createHttpError(404, 'Column not found');
+  }
+  if (column.board.toString() !== boardId) {
+    throw createHttpError(
+      403,
+      'Not authorized to reorder tasks in this column',
+    );
+  }
+
+  // Sadece o column'a ait task'lar olmalı
+  if (
+    taskOrder.some((id) => !column.tasks.map((t) => t.toString()).includes(id))
+  ) {
+    throw createHttpError(400, 'Invalid task id in taskOrder');
+  }
+
+  column.tasks = taskOrder;
+  await column.save();
+
+  res.status(200).send({
+    message: 'Task order updated successfully',
+    status: '200',
+    data: {
+      columnId,
+      taskOrder,
+    },
+  });
+};
