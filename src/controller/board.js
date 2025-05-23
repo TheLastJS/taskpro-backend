@@ -306,6 +306,8 @@ export const deleteColumnController = async (req, res) => {
   if (column.board.toString() !== boardId) {
     throw createHttpError(403, 'Not authorized to delete this column');
   }
+  // Önce column'a bağlı tüm task'ları sil
+  await taskCollection.deleteMany({ column: columnId });
   await columnCollection.findByIdAndDelete(columnId);
   board.columns = board.columns.filter((col) => col.toString() !== columnId);
   await board.save();
@@ -560,6 +562,6 @@ export const deleteTaskController = async (req, res) => {
     status: '200',
     data: {
       taskId,
-    },
-  });
+    },
+  });
 };
