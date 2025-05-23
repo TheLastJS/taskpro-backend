@@ -28,10 +28,10 @@ export const startServer = () => {
   app.use('/api-docs', swaggerDocs());
 
   // Routes
-  app.use('/api/users', userRouter); // Corrected variable name
-  app.use('/api/auth', authRouter);
-  app.use('/api/boards', boardsRouter);
-  app.use('/api', helpRouter); // Reverted to /api for helpRouter
+  app.use('/users', userRouter); // Corrected variable name
+  app.use('/auth', authRouter);
+  app.use('/boards', boardsRouter);
+  app.use('/', helpRouter); // Reverted to /api for helpRouter
 
   // 404 Handler
   app.use(notFoundHandler);
