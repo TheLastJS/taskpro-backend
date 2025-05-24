@@ -19,6 +19,7 @@ import {
   addTaskToColumnController,
   updateTaskController,
   deleteTaskController,
+  reorderTasksController,
 } from '../controller/board.js';
 import { addColumnSchema } from '../validators/column.js';
 import { addTaskSchema, updateTaskSchema } from '../validators/task.js';
@@ -117,6 +118,13 @@ boardsRouter.delete(
   '/:boardId/columns/:columnId/task/:taskId',
   isValidId,
   ctrlWrapper(deleteTaskController),
+);
+
+// reorder tasks in a column
+boardsRouter.patch(
+  '/:boardId/columns/:columnId/tasks/reorder',
+  isValidId,
+  ctrlWrapper(reorderTasksController),
 );
 
 export default boardsRouter;

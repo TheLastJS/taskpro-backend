@@ -37,6 +37,7 @@ export const startServer = () => {
 
   app.use('/api', helpRouter); // Reverted to /api for helpRouter
 
+
   // 404 Handler
   app.use(notFoundHandler);
 
