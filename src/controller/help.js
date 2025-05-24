@@ -15,7 +15,17 @@ const sendNeedHelpEmailController = async (req, res) => {
   const { email, message } = req.body;
   const supportEmail = process.env.SUPPORT_EMAIL;
 
+  console.log('Received help request:', { email, message });
+  console.log('Environment variables:', {
+    SMTP_HOST: process.env.SMTP_HOST,
+    SMTP_PORT: process.env.SMTP_PORT,
+    GMAIL_USER: process.env.GMAIL_USER,
+    SUPPORT_EMAIL: process.env.SUPPORT_EMAIL,
+    // Not logging GMAIL_APP_PASSWORD for security
+  });
+
   if (!supportEmail) {
+    console.error('SUPPORT_EMAIL is not defined in environment variables');
     throw createHttpError(
       500,
       'Server configuration error: SUPPORT_EMAIL is not defined.',
@@ -23,6 +33,7 @@ const sendNeedHelpEmailController = async (req, res) => {
   }
 
   try {
+    console.log('Reading email template from:', HTML_TEMPLATE_PATH);
     let htmlContent = await fs.readFile(HTML_TEMPLATE_PATH, 'utf-8');
     htmlContent = htmlContent
       .replace('{{userEmail}}', email)
@@ -30,19 +41,25 @@ const sendNeedHelpEmailController = async (req, res) => {
       .replace('{{year}}', new Date().getFullYear());
 
     const mailOptions = {
-      from: `"TaskPro Support" <${process.env.GMAIL_USER}>`, // Sender address with display name
-      to: supportEmail, // List of receivers (your support email, also your Gmail)
-      subject: 'New Need Help Request', // Subject line
-      html: htmlContent, // HTML body content
+      from: `"TaskPro Support" <${process.env.GMAIL_USER}>`,
+      to: supportEmail,
+      subject: 'New Need Help Request',
+      html: htmlContent,
     };
 
+    console.log('Attempting to send email...');
     await sendEmail(mailOptions);
+    console.log('Email sent successfully');
 
     res.status(200).json({
       message: 'Help request sent successfully.',
     });
   } catch (error) {
-    console.error('Error sending help email:', error);
+    console.error('Detailed error in help controller:', {
+      message: error.message,
+      stack: error.stack,
+      code: error.code
+    });
     throw createHttpError(500, 'Failed to send help request email.');
   }
 };
