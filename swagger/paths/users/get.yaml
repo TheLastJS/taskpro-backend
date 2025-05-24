@@ -1,0 +1,45 @@
+tags:
+  - Users
+summary: Get list of users
+operationId: getUsers
+description: Retrieve all users from the system.
+security:
+  - bearerAuth: []
+parameters: []
+responses:
+  '200':
+    description: Users fetched successfully
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              example: Users fetched successfully
+            status:
+              type: string
+              example: '200'
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: 60d0fe4f5311236168a109ca
+                  name:
+                    type: string
+                    example: John Doe
+                  email:
+                    type: string
+                    example: john@example.com
+                  avatar:
+                    type: string
+                    example: https://example.com/avatar.jpg
+                  theme:
+                    type: string
+                    enum: [light, dark, violet]
+                    example: light
+  '401':
+    $ref: '../../components/responses/401.yaml'
