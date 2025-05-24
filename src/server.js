@@ -17,6 +17,7 @@ export const startServer = () => {
   app.use(cors());
   app.use(cookieParser());
   app.use(express.json());
+
   app.use(
     pino({
       transport: {
@@ -24,14 +25,18 @@ export const startServer = () => {
       },
     }),
   );
+
   // API Documentation Swagger DOCS
   app.use('/api-docs', swaggerDocs());
 
   // Routes
+
   app.use('/users', userRouter); // Corrected variable name
   app.use('/auth', authRouter);
   app.use('/boards', boardsRouter);
-  app.use('/', helpRouter); // Reverted to /api for helpRouter
+
+  app.use('/api', helpRouter); // Reverted to /api for helpRouter
+
 
   // 404 Handler
   app.use(notFoundHandler);
